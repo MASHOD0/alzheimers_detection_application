@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template, secure_filename
+from flask import Flask, request, render_template
 import os
+from model import predict_image
 
 app = Flask(__name__)
 
@@ -14,13 +15,14 @@ def upload():
     if 'file' not in request.files:
         return 'No file uploaded', 400
 
-    file = request.files['file']
-    if file.filename == '':
+    file_input = request.files['file']
+    if file_input.filename == '':
         return 'No file selected', 400
 
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return 'File uploaded successfully', 200
+    
+    file_input.save(os.path.join(app.config['UPLOAD_FOLDER'], 'image.jpg'))
+    prediction = predict_image('UPLOADS/image.jpg')
+    return f'File uploaded successfully \n Prediction: {prediction}', 200
 
 if __name__ == '__main__':
     app.run(debug=True)
