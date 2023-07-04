@@ -18,11 +18,14 @@ def upload():
     file_input = request.files['file']
     if file_input.filename == '':
         return 'No file selected', 400
+    print(file_input.filename)
 
     
     file_input.save(os.path.join(app.config['UPLOAD_FOLDER'], 'image.jpg'))
     prediction = predict_image('UPLOADS/image.jpg')
-    return f'File uploaded successfully \n Prediction: {prediction}', 200
+    # return f'File uploaded successfully \n Prediction: {prediction}', 200
+    return render_template('result.html', results=prediction)
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
