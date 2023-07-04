@@ -3,12 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>File Upload</title>
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(to bottom right, #eaeaea, #f5f5f5);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-upload {
+            display: flex;
+            align-items: center;
+        }
+        .file-upload input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+        }
+        .file-upload .browse-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .file-upload .browse-btn:hover {
+            background-color: #0056b3;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .upload-progress {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .upload-progress-bar {
+            width: 0%;
+            height: 10px;
+            background-color: #007bff;
+            transition: width 0.2s ease-in-out;
+        }
+        .error-message {
+            color: red;
+            margin-top: 5px;
+        }
+        .file-preview {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .file-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+    </style>
 </head>
 <body>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>   
+    <div class="container">
+        <h1>File Upload</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="return validateForm(event)">
+            <div class="form-group file-upload">
+                <label for="file">Select a file:</label>
+                <input type="text" id="file-name" readonly>
+                <label for="file" class="browse-btn">Browse</label>
+                <input type="file" name="file" id="file" required>
+            </div>
+            <button type="submit">Upload</button>
+        </form>
+        <div class="upload-progress">
+            <div class="upload-progress-bar"></div>
+        </div>
+        <div class="error-message" id="error-message"></div>
+        <div class="file-preview" id="file-preview"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file');
+        const fileNameInput = document.getElementById('file-name');
+        const filePreview = document.getElementById('file-preview');
+        const errorMessage = document.getElementById('error-message');
+
+        fileInput.addEventListener('change', function() {
+            fileNameInput.value = fileInput.files[0].name;
+            previewFile(fileInput.files[0]);
+        });
+
+        function previewFile(file) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const img = document.createElement('img');
+                img.src = reader.result;
+                filePreview.innerHTML = '';
+                filePreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function validateForm(event) {
+            const file = fileInput.files[0];
+            if (!file) {
+                errorMessage.innerText = 'Please select a file.';
+                event.preventDefault();
+                return false;
+            }
+            if (file.type.indexOf('image/') !== 0) {
+                errorMessage.innerText = 'Please select an image file.';
+                event.preventDefault();
+                return false;
+            }
+            errorMessage.innerText = '';
+            return true;
+        }
+    </script>
 </body>
 </html>
